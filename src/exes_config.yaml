@@ -1,0 +1,62 @@
+datasets:
+  DBLP:
+    data:
+      graph: ../data/dblp/graph.pkl
+      author2id: ../data/dblp/authors_id.pkl
+      all_skills: ../data/dblp/all_skills.pkl
+    models:
+      expert_search:
+        - model_name: GraphModel
+          path: ../model/DBLP_GraphModel.pt
+          params:
+            - 1829
+            - 512
+            - 64
+        - model_name: GraphModel2
+          path: ../model/DBLP_GraphModel2.pt
+          params:
+            - 1829
+            - 256
+            - 64
+      doc2vec:
+          path: ../data/dblp/doc2vec.pkl
+          embeddings: ../data/dblp/embeddings.json
+      link_prediction:
+        model_name: LinkPredictionModel
+        path: ../model/DBLP_GAE.pt
+        params:
+          - 1829
+          - 128
+          - 64
+  # github:
+  #   data:
+  #     graph: ../data/github/graph_github.pkl
+  #     author2id: ../data/github/authors_id_github.pkl
+  #     all_skills: ../data/github/all_skills_github.pkl
+  #   models:
+  #     expert_search:
+  #       - model_name: GraphModel
+  #         path: ../model/Github_GraphModel.pt
+  #         params:
+  #           - 863
+  #           - 128
+  #           - 64
+  #       - model_name: GraphModel2
+  #         path: ../model/Github_GraphModel2.pt
+  #         params:
+  #           - 863
+  #           - 256
+  #           - 64
+  #     doc2vec:
+  #       path: ../data/github/doc2vec_github.pkl
+  #       embeddings: ../data/github/embeddings.json
+  #     link_prediction:
+  #       model_name: LinkPredictionModel
+  #       path: ../model/Github_GAE.pt
+  #       params:
+  #         - 863
+  #         - 128
+  #         - 64
+exes_parameters:
+  beam_size: 30
+  tau: 0.1

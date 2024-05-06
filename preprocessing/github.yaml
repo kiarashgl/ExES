@@ -1,0 +1,30 @@
+repo_dict_path: ../../data/repo_dict.pkl
+dataset_paths:
+  - ../../data/github/Github_data.csv
+  - ../../data/github/repositories.csv
+tfidf_threshold: 0.1
+saving_paths:
+  graph: ../../data/github/graph_github.pkl
+  authors_id: ../../data/github/authors_id_github.pkl
+  all_skills: ../../data/github/all_skills_github.pkl
+  vectorizer: ../../data/github/vectorizer_github.pkl
+
+train:
+  model_name: GraphModel
+  model_params:
+    - 863
+    - 256
+    - 64
+  num_epochs: 10
+  learning_rate: 1.0e-6
+  batch_size: 64
+  num_negative_samples: 1
+  model_saving_dir: ../../model/
+
+link_prediction:
+  model_params:
+    - 863
+    - 128
+    - 64
+  num_epochs: 100
+  model_saving_dir: ../../model/

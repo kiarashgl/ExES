@@ -1,0 +1,32 @@
+dblp_pickle: ../../data/dblp/acm.pkl
+good_authors: ../../data/dblp/good_authors.pkl
+paper_keywords_path: "../../data/dblp/keywords.pkl"
+tfidf_threshold: 0.1
+saving_paths:
+  graph: ../../data/dblp/graph.pkl
+  authors_id: ../../data/dblp/authors_id.pkl
+  all_skills: ../../data/dblp/all_skills.pkl
+  vectorizer: ../../data/dblp/vectorizer.pkl
+  word2vec: ../../data/dblp/doc2vec.pkl
+
+train:
+  preprocessed_authors_path: ../../data/dblp/preprocessed_authors.pkl
+  preprocessed_papers_path: ../../data/dblp/preprocessed_papers.pkl
+  model_name: GraphModel
+  model_params:
+    - 1829
+    - 256
+    - 64
+  num_epochs: 10
+  learning_rate: 1.0e-5
+  batch_size: 64
+  num_negative_samples: 1
+  model_saving_dir: ../../model/
+
+link_prediction:
+  model_params:
+    - 1829
+    - 128
+    - 64
+  num_epochs: 100
+  model_saving_dir: ../../model/
