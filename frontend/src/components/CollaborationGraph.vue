@@ -21,10 +21,7 @@ let configs = reactive(
           // positionFixedByClickWithAltKey: true,
           createSimulation: (d3, nodes, edges) => {
             // d3-force parameters
-            console.log("NODES:", nodes)
-            console.log("EDGES:", edges)
             const forceLink = d3.forceLink<ForceNodeDatum, ForceEdgeDatum>(edges).id(d => {
-              console.log("D:", d)
               return d.id
             })
             return d3
@@ -63,11 +60,9 @@ let configs = reactive(
               return 2
           },
           color: edge => {
-            // console.log("asd")
             if ('color' in edge) {
               const s = "#" + componentToHex(edge.color[0]) + componentToHex(edge.color[1])
                 + componentToHex(edge.color[2]) + componentToHex(edge.color[3] * 255)
-              console.log(edge, s)
               return s
             }
             else {
@@ -79,11 +74,6 @@ let configs = reactive(
                 return "rgba(199,199,199,0.49)";
             }
           },
-
-          // label: edge => "asd",
-
-
-          // dasharray: edge => (edge.dashed ? "4" : "0"),
         },
       },
       node: {
@@ -95,7 +85,6 @@ let configs = reactive(
           radius: node => {
             const mxrank = Math.min(node.rank, 1000)
             const sz = (1000 - mxrank) / 1000 * 7 + 2
-            // console.log(node, node.rank)
             return sz
           }, // Use the value of each node object
           color: node => {
@@ -148,8 +137,6 @@ export default {
 
 <template>
   <div>
-<!--    ammat-->
-<!--    {{ sn }}-->
     <v-network-graph
       class="graph"
       :nodes="graph.nodes"

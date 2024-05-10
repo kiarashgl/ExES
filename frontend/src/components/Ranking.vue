@@ -1,6 +1,5 @@
 <template>
   <v-table density="compact" hover style="max-height: 400px;overflow: auto;">
-<!--           style="border: 1px solid black; border-radius: 5px">-->
     <thead>
     <tr>
       <th style="width: 8%">Rank</th>
@@ -23,7 +22,6 @@
     <tr v-if="newRank !== undefined && newRank.index > topk" style="border-top: black 5px solid">
       <td>{{newRank.index}}</td>
       <td>{{newRank.expert.name}}</td>
-<!--      <td></td>-->
     </tr>
 
     </tbody>

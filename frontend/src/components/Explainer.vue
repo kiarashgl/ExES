@@ -5,7 +5,6 @@
       <v-card>
         <v-card-title>Explain Results
         <span class="text-subtitle-2">for {{selected.name}}</span>
-<!--          <v-btn density="compact" icon="mdi-information-outline"></v-btn>-->
         </v-card-title>
         <v-card-text>
           <div class="system-hint">Select an explanation category from tabs below.</div>
@@ -13,26 +12,19 @@
             <v-tab :value="1">Saliency</v-tab>
             <v-tab :value="2">Counterfactual</v-tab>
           </v-tabs>
-<!--          <div>Select your desired explanation method.</div>-->
           <div class="my-4 d-flex">
-<!--               style="max-width: 400px"-->
-
               <v-select style="max-width: 400px" hide-details density="compact" return-object v-model="explanationMethod"
                         label="Explanation method" :items="availableExplanations" item-title="title" item-value="type"
                         variant="outlined" @change="explanation = null; plot = null"></v-select>
 
+              <v-text-field style="max-width:150px" v-model.number="radius" variant="outlined" class="mx-2" label="Neighbourhood Radius" density="compact" hide-details type="number" min="0" max="1"></v-text-field>
               <v-text-field v-if="tab === 2" style="max-width:150px" v-model.number="numExplanations" variant="outlined" class="mx-2" label="# of Explanations" density="compact" hide-details type="number" min="1" max="10"></v-text-field>
               <v-text-field v-if="tab === 2" style="max-width:150px" v-model.number="maxExplanationSize" variant="outlined" class="mx-2" label="Max Explanation Size" density="compact" hide-details type="number" min="1" max="10"></v-text-field>
-              <v-btn class="ml-3" @click="runExplanation">Explain</v-btn>
+              <v-btn class="ml-3" :disabled="loading" @click="runExplanation">Explain</v-btn>
           </div>
           <v-window v-model="tab">
             <v-window-item transition="tab-transition" reverse-transition="tab-transition" :value="1">
               <div>
-<!--                <v-btn-toggle v-if="tab === 1" v-model="saliencyTarget" divided mandatory density="compact" color="primary">-->
-<!--                  <v-btn value="rank">Rank</v-btn>-->
-<!--                  <v-btn value="relevance">Relevance</v-btn>-->
-<!--                  <v-btn value="score">Score</v-btn>-->
-<!--                </v-btn-toggle>-->
                 <v-progress-circular class="d-block" v-if="loading" indeterminate></v-progress-circular>
                 <CollaborationGraph shap v-if="shapgraph" :graph="shapgraph"></CollaborationGraph>
                 <div id="shap" v-if="plot.html && !shapgraph" v-html="plot.html" :class="{flip: plot.method === 'rank'}"></div>
@@ -126,9 +118,9 @@ export default {
     return {
       tab: null,
       plot: "",
-      saliencyTarget: "relevance",
       shapgraph: null,
       explanationMethod: null,
+      radius:1,
       numExplanations:5,
       maxExplanationSize:5,
       explanationMethods: [
@@ -194,7 +186,7 @@ export default {
       this.explanation = null
       this.explanationMethod = null
       this.shapgraph = null
-      this.plot = {html: "", method: this.saliencyTarget}
+      this.plot = {html: ""}
     },
     getColor: function(skill) {
       if (skill in this.saliency.shapSkills)
@@ -206,22 +198,20 @@ export default {
       this.explanations = [];
       this.explanation = null;
       this.loading = false;
-      this.plot = {html: "", method: this.saliencyTarget};
+      this.plot = {html: ""};
       try {
         this.loading = true;
 
-        const res = await axios.post(`http://localhost:8090/explain/${this.explanationMethod.type}`,
+        const res = await axios.post(`http://localhost:8094/explain/${this.explanationMethod.type}`,
           {
             query: this.queryWords, qemb: this.queryEmb, expert: this.selected.id, topk: this.topk, num_explanations: this.numExplanations,
             max_explanation_size: this.maxExplanationSize,
-            expert_in_topk: this.selected.rank < this.topk, saliency_target: this.saliencyTarget, dataset: this.dataset, model: this.model
+            expert_in_topk: this.selected.rank < this.topk, dataset: this.dataset, model: this.model, radius: this.radius,
           })
         const data = res.data
 
         if (this.explanationMethod.type === "shap" || this.explanationMethod.type === "shap_query" || this.explanationMethod.type === "shap_edge") {
           this.plot.html = data.plot
-          this.plot.method = this.saliencyTarget
-          // console.log(data)
           if (this.explanationMethod.type === "shap") {
               this.saliency.shapSkills = data.colors
           }
@@ -229,10 +219,6 @@ export default {
 
         } else {
           this.explanations = data
-          // this.explanation = data.removed_words
-          // this.newTopK = data.new_tops
-          // this.changes = data.removed_words
-          // this.newRank = data.new_rank
         }
         if (this.explanationMethod.type === "shap_edge")
           this.shapgraph = {nodes: data.nodes, edges: data.edges}
@@ -246,6 +232,7 @@ export default {
     },
     runExample: function(item) {
       this.tab = item.tab
+      this.radius = item.radius
       this.explanationMethod = this.explanationMethods[item.explanation]
       this.numExplanations = 5;
       this.maxExplanationSize = 5;
@@ -264,7 +251,6 @@ export default {
   transform: scale(-1, 1)!important;
 }
 #shap.flip text {
-  /*transform-origin: center;*/
   transform: scale(-1, 1) !important;
 }
 </style>

@@ -18,10 +18,6 @@
           </v-list-item>
         </v-list>
       </v-menu>
-      <!--      <v-btn-toggle mandatory color="primary" v-model="appMode">-->
-      <!--        <v-btn value="expert">Expert Search</v-btn>-->
-      <!--        <v-btn value="team">Team Formation</v-btn>-->
-      <!--      </v-btn-toggle>-->
     </v-app-bar>
     <v-main>
       <v-container fluid class="px-12">
@@ -62,7 +58,7 @@
                     The model titles (GraphSAGE and GCN) represent the graph convolutional layers used in the expert search model.
                     </p>
                   <p>
-                    Furthermore, the numbers written in parantheses represent the dimensions of the hidden layers. For instance,
+                    Furthermore, the numbers written in parentheses represent the dimensions of the hidden layers. For instance,
                     GCN (256 - 64) corresponds to an expert search system that employs two GCN (Graph Convolutional Network) layers,
                     each having 256 and 64-dimensional embeddings, respectively.
                   </p>
@@ -76,12 +72,7 @@
                           variant="outlined"></v-text-field>
           </v-col>
         </v-row>
-
-        <!--        <v-row v-if="queryWords.length">Query Words:-->
-        <!--          <v-chip class="mr-1" v-for="item in queryWords" :key="item">{{ item }} </v-chip>-->
-        <!--        </v-row>-->
         <div v-if="results.length > 0" class="mt-1">
-<!--          <v-divider></v-divider>-->
           <h2>Expert Search</h2>
           <v-row class="my-1">
             <v-col md="3" cols="12">
@@ -155,9 +146,6 @@
 </template>
 
 <style>
-/** {*/
-/*  text-transform: none !important;*/
-/*}*/
 #shap g svg {
   overflow: hidden !important;
 }
@@ -227,7 +215,8 @@ export default {
         topk: 10,
         dataset: "DBLP",
         explanation: 6,
-        tab: 1
+        tab: 1,
+        radius: 0,
       },
       {
         title: "Use Case 2: Influential Edges (Saliency)",
@@ -236,7 +225,8 @@ export default {
         topk: 10,
         dataset: "DBLP",
         explanation: 8,
-        tab: 1
+        tab: 1,
+        radius: 2,
       },
       {
         title: "Use Case 3: Counterfactual Skill Explanation",
@@ -245,7 +235,8 @@ export default {
         topk: 10,
         dataset: "DBLP",
         explanation: 0,
-        tab: 2
+        tab: 2,
+        radius: 1
       },
       {
         title: "Use Case 4: Counterfactual Collaboration Explanation",
@@ -254,7 +245,8 @@ export default {
         topk: 10,
         dataset: "DBLP",
         explanation: 4,
-        tab: 2
+        tab: 2,
+        radius: 1,
       },
     ],
     model: 1,
@@ -264,6 +256,7 @@ export default {
     selected: null,
     showSkills: false,
     topk: 10,
+    radius: 1,
     explanationTopk: 10,
     dataset: "DBLP",
     queryWords: [],
@@ -294,10 +287,9 @@ export default {
   },
   methods: {
     search: async function () {
-      console.log(this.searchQuery)
       this.searching = true
       const url = this.appMode === "expert" ? "search" : "search"
-      const res = await axios.get(`http://localhost:8090/${url}`, {
+      const res = await axios.get(`http://localhost:8094/${url}`, {
         params: {
           query: this.searchQuery,
           n: this.topk,
@@ -341,7 +333,6 @@ export default {
       this.teamSearchPending = false
     },
     handleClick: function(item) {
-      console.log("THIS is item", item)
       const nodeId = +item[0].replace("node", "")
       let maxRank = 0;
       if (item.length > 0) {
@@ -360,6 +351,7 @@ export default {
       this.searchQuery = item.query;
       this.topk = item.topk;
       this.dataset = item.dataset;
+      this.radius = item.radius;
       await this.search();
       await this.setSelected(this.results[item.desiredExpert - 1])
       this.$refs.explainer.runExample(item)
